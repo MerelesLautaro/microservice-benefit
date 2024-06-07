@@ -9,12 +9,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BenefitExceptions.class)
     public ResponseEntity<?> handleBenefitNotFoundException(BenefitExceptions ex, WebRequest request) {
-        // Puedes definir una clase de respuesta personalizada para devolver un JSON estructurado
         ErrorDetails errorDetails = new ErrorDetails(HttpStatus.NOT_FOUND.value(), ex.getMessage());
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
-
-    // Maneja otras excepciones aquí
 
     // Clase interna para los detalles del error
     public static class ErrorDetails {

@@ -15,11 +15,11 @@ public class BenefitService implements IBenefitService{
     private IBenefitRepository benefitRepo;
 
     @Autowired
-    private BenefitValidator validator;
+    private BenefitValidator benefitValidator;
 
     @Override
     public void saveBenefit(Benefit benefit) {
-        validator.saveValidate(benefit);
+        benefitValidator.validate(benefit);
         benefitRepo.save(benefit);
     }
 
@@ -40,6 +40,7 @@ public class BenefitService implements IBenefitService{
 
     @Override
     public void editBenefit(Long id, Benefit benefit) {
+        benefitValidator.validate(benefit);
         Benefit benefitEdit = this.findBenefit(id);
 
         benefitEdit.setName(benefit.getName());
