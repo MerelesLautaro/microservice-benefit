@@ -4,20 +4,27 @@ import com.lautadev.microservice_benefit.Throwable.BenefitExceptions;
 import com.lautadev.microservice_benefit.Throwable.BenefitValidator;
 import com.lautadev.microservice_benefit.model.Benefit;
 import com.lautadev.microservice_benefit.repository.IBenefitRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 public class BenefitService implements IBenefitService{
-    @Autowired
-    private IBenefitRepository benefitRepo;
+
+    private final IBenefitRepository benefitRepo;
+    private final BenefitValidator benefitValidator;
 
     @Autowired
-    private BenefitValidator benefitValidator;
+    public BenefitService(IBenefitRepository benefitRepo, BenefitValidator benefitValidator){
+        this.benefitRepo = benefitRepo;
+        this.benefitValidator  = benefitValidator;
+    }
 
     @Override
+    @Transactional
     public void saveBenefit(Benefit benefit) {
         benefitValidator.validate(benefit);
         benefitRepo.save(benefit);
@@ -34,21 +41,17 @@ public class BenefitService implements IBenefitService{
     }
 
     @Override
+    @Transactional
     public void deleteBenefit(Long id) {
         benefitRepo.deleteById(id);
     }
 
     @Override
+    @Transactional
     public void editBenefit(Long id, Benefit benefit) {
         benefitValidator.validate(benefit);
         Benefit benefitEdit = this.findBenefit(id);
-
-        benefitEdit.setName(benefit.getName());
-        benefitEdit.setStartTime(benefit.getStartTime());
-        benefitEdit.setEndTime(benefit.getEndTime());
-        benefitEdit.setDay(benefit.getDay());
-        benefitEdit.setTickets(benefit.getTickets());
-
+        BeanUtils.copyProperties(benefit, benefitEdit, "id");
         this.saveBenefit(benefitEdit);
     }
 }
